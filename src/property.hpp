@@ -2,7 +2,7 @@
 #define CWIRE_PROPERTY_H
 #include <algorithm>
 
-#include "event.hpp"
+#include "../event.hpp"
 
 #endif //CWIRE_PROPERTY_H
 
