@@ -89,6 +89,9 @@ namespace cwr {
 
     template<typename ...Args>
     using predicate = delegate<bool, Args...>;
+
+    template<typename K, typename V>
+    using mapper = delegate<K, V>;
 }
 
 
