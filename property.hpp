@@ -1,7 +1,3 @@
-//
-// Created by kwiec on 5.06.2026.
-//
-
 #ifndef CWIRE_PROPERTY_H
 #define CWIRE_PROPERTY_H
 #include <algorithm>
@@ -18,6 +14,7 @@ namespace cwr {
         EVENT(ValueChanged, class property, T, T);
 
     public:
+        using ValueChangedEventHandler = delegate<void, T>;
 
         property() : m_Value() {}
 
