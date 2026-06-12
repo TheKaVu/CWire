@@ -1,0 +1,7 @@
+# Pliki projektowe JetBrains (CLion)
+.idea/
+cmake-build-debug/
+cmake-build-release/
+
+# Opcjonalne pliki użytkownika
+*.user
