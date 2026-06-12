@@ -5,7 +5,7 @@
 #include <memory>
 #include <vector>
 
-#include "../delegate.hpp"
+#include "delegate.hpp"
 
 namespace cwr {
     template<typename R, typename ...Args>
