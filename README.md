@@ -3,8 +3,9 @@ This is CWire, toolkit library for C++ reactive programming.
 
 ## Installation
 ### Get files
-- Download the latest release from [here](url).
-- Download pre-built library files from `./build/` folder
+Choose from options:
+- Download the latest release from [here](url) (currently unavailable),
+- Reference library via repository url,
 - Fork project and compile it yourself
 
 ### Add references
