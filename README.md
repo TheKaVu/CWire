@@ -87,10 +87,10 @@ int main() {
 ```
 
 Along with delegate class come some useful generic aliases:
-- `supplier<T>` - accepts no arguments and returns `T`
+- `supplier<R>` - accepts no arguments and returns `R`
 - `consumer<Args...>` - accepts number of arguments, returns `void`
 - `predicate<Args...>` - accepts number of arguments and returns `bool`
-- `mapper<K, V>` - accepts `V` and returns `K`
+- `mapper<V, K>` - accepts `K` and returns `V`
 
 ### Multidelegates
 
