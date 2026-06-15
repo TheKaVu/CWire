@@ -7,6 +7,9 @@ namespace cwr {
     template<typename R, typename ...Args>
     class delegate{
 
+        template<typename AnyR, typename ...AnyArgs>
+        friend class delegate;
+
         using ContextFunc_t = R(*)(void*, Args...);
 
         ContextFunc_t m_Function = nullptr;
