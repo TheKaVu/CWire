@@ -10,7 +10,7 @@ add_library(CWire SHARED
         src/event.hpp
         src/property.hpp
 )
-target_include_directories(CWire PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_include_directories(CWire PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 set_target_properties(CWire PROPERTIES
         ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib"

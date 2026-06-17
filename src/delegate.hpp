@@ -1,6 +1,7 @@
 #ifndef SAMPLES_DELEGATE_H
 #define SAMPLES_DELEGATE_H
 #include <algorithm>
+#include <cstring>
 
 namespace cwr {
 
@@ -14,9 +15,9 @@ namespace cwr {
 
         ContextFunc_t m_Function = nullptr;
         void* m_Context = nullptr;
-        uintptr_t m_MemRef = 0;
+        alignas(void*) unsigned char* m_MemRef = nullptr;
 
-        delegate(const ContextFunc_t function, void* context, const uintptr_t memRef) : m_Function(function), m_Context(context), m_MemRef(memRef) {}
+        delegate(const ContextFunc_t function, void* context, unsigned char* memRef) : m_Function(function), m_Context(context), m_MemRef(memRef) {}
 
     public:
         delegate() = default;
@@ -24,7 +25,8 @@ namespace cwr {
         delegate(const delegate& other) {
             m_Function = other.m_Function;
             m_Context = other.m_Context;
-            m_MemRef = other.m_MemRef;
+            m_MemRef = new unsigned char[sizeof(other.m_MemRef)];
+            std::memcpy(m_MemRef, other.m_MemRef, sizeof(other.m_MemRef));
         }
 
         delegate(delegate&& other) noexcept {
@@ -32,29 +34,35 @@ namespace cwr {
             m_Context = other.m_Context;
             other.m_Context = nullptr;
             m_MemRef = other.m_MemRef;
-            other.m_MemRef = 0;
+            other.m_MemRef = nullptr;
         }
 
         ~delegate(){
             m_Function = nullptr;
             m_Context = nullptr;
-            m_MemRef = 0;
+            m_MemRef = nullptr;
         }
 
         template<R(*Func)(Args...)>
         void set() {
             m_Context = nullptr;
             m_Function = [](void*, Args... args) {return Func(std::forward<Args>(args)...); };
-            m_MemRef = reinterpret_cast<uintptr_t>(Func);
+            delete[] m_MemRef;
+            auto funcPtr = Func;
+            m_MemRef = new unsigned char[sizeof(funcPtr)];
+            std::memcpy(m_MemRef, &funcPtr, sizeof(funcPtr));
         }
 
         template<typename T, R(T::*Func)(Args...)>
-        void set(const T& context) {
-            m_Context = context;
+        void set(T& context) {
+            m_Context = &context;
             m_Function = [](void* ctx, Args... args) {
                 return (static_cast<T*>(ctx)->*Func)(std::forward<Args>(args)...);
             };
-            m_MemRef = reinterpret_cast<uintptr_t>(Func);
+            delete[] m_MemRef;
+            auto funcPtr = Func;
+            m_MemRef = new unsigned char[sizeof(funcPtr)];
+            std::memcpy(m_MemRef, &funcPtr, sizeof(funcPtr));
         }
 
         R invoke(Args... args) const {
@@ -72,12 +80,13 @@ namespace cwr {
             m_Context = other.m_Context;
             other.m_Context = nullptr;
             m_MemRef = other.m_MemRef;
-            other.m_MemRef = 0;
+            other.m_MemRef = nullptr;
             return *this;
         }
 
         bool operator ==(const delegate& other) const {
-            return m_Context == other.m_Context && m_MemRef == other.m_MemRef;
+            return m_Context == other.m_Context &&
+                std::memcmp(m_MemRef, other.m_MemRef, sizeof(m_MemRef)) == 0;
         }
 
         template<typename OtherR, typename ...OtherArgs, typename Other = delegate<OtherR, OtherArgs...>>
@@ -87,14 +96,25 @@ namespace cwr {
 
         template<R(*Func)(Args...)>
         static delegate of() {
-            return delegate([](void*, Args... args) {return Func(std::forward<Args>(args)...); }, nullptr, reinterpret_cast<uintptr_t>(Func));
+            auto funcPtr = Func;
+            auto buffer = new unsigned char[sizeof(funcPtr)];
+            std::memcpy(buffer, &funcPtr, sizeof(funcPtr));
+            return delegate(
+                [](void*, Args... args) {return Func(std::forward<Args>(args)...); },
+                nullptr,
+                buffer
+                );
         }
 
         template<typename T, R(T::*Func)(Args...)>
-        static delegate of(const T& context) {
-            return delegate([](void* ctx, Args... args) {
-                return (static_cast<T*>(ctx)->*Func)(std::forward<Args>(args)...);
-            }, &context, reinterpret_cast<uintptr_t>(Func));
+        static delegate of(T& context) {
+            auto funcPtr = Func;
+            auto buffer = new unsigned char[sizeof(funcPtr)];
+            std::memcpy(buffer, &funcPtr, sizeof(funcPtr));
+            return delegate(
+                [](void* ctx, Args... args) {return (static_cast<T*>(ctx)->*Func)(std::forward<Args>(args)...);},
+                &context,
+                buffer);
         }
     };
 
