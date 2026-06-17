@@ -35,7 +35,7 @@ namespace cwr {
             other.m_MemRef = 0;
         }
 
-        virtual ~delegate(){
+        ~delegate(){
             m_Function = nullptr;
             m_Context = nullptr;
             m_MemRef = 0;
