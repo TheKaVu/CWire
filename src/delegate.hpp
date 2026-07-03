@@ -40,6 +40,7 @@ namespace cwr {
         ~delegate(){
             m_Function = nullptr;
             m_Context = nullptr;
+            delete[] m_MemRef;
             m_MemRef = nullptr;
         }
 
@@ -73,7 +74,14 @@ namespace cwr {
             return invoke(std::forward<Args>(args)...);
         }
 
-        constexpr delegate& operator =(const delegate& other) = default;
+        constexpr delegate& operator =(const delegate& other) {
+            if (&other == this) return *this;
+            m_Function = other.m_Function;
+            m_Context = other.m_Context;
+            m_MemRef = new unsigned char[sizeof(other.m_MemRef)];
+            std::memcpy(m_MemRef, other.m_MemRef, sizeof(other.m_MemRef));
+            return *this;
+        }
 
         constexpr delegate& operator =(delegate&& other) noexcept {
             m_Function = std::move(other.m_Function);
@@ -85,8 +93,12 @@ namespace cwr {
         }
 
         bool operator ==(const delegate& other) const {
-            return m_Context == other.m_Context &&
-                std::memcmp(m_MemRef, other.m_MemRef, sizeof(m_MemRef)) == 0;
+            return this == &other || (
+                m_Context == other.m_Context && std::memcmp(m_MemRef, other.m_MemRef, sizeof(m_MemRef)) == 0);
+        }
+
+        bool operator!=(const delegate &other) const {
+            return !(*this == other);
         }
 
         template<typename OtherR, typename ...OtherArgs, typename Other = delegate<OtherR, OtherArgs...>>
