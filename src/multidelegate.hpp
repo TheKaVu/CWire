@@ -24,7 +24,7 @@ namespace cwr {
             m_Handlers = {handler};
         }
 
-        multidelegate(const multidelegate &other) : m_Handlers(std::copy(other.m_Handlers.begin(), other.m_Handlers.end())) {}
+        multidelegate(const multidelegate &other) : m_Handlers(other.m_Handlers) {}
 
         multidelegate(const multidelegate &&other) noexcept : m_Handlers(std::move(other.m_Handlers)) {}
 
@@ -37,11 +37,27 @@ namespace cwr {
         }
 
         void add(const Handler &handler) {
-            m_Handlers.emplace_back(handler);
+            m_Handlers.push_back(handler);
+        }
+
+        void add(const Handler &&handler) {
+            m_Handlers.push_back(std::move(handler));
         }
 
         void remove(const Handler &handler) {
-            std::remove(m_Handlers.begin(), m_Handlers.end(), handler);
+            m_Handlers.erase(std::remove(m_Handlers.begin(), m_Handlers.end(), handler));
+        }
+
+        void remove(const Handler &&handler) {
+            m_Handlers.erase(std::remove(m_Handlers.begin(), m_Handlers.end(), std::move(handler)));
+        }
+
+        bool operator==(const multidelegate &other) const {
+            return this == &other || m_Handlers == other.m_Handlers;
+        }
+
+        bool operator!=(const multidelegate &other) const {
+            return !(*this == other);
         }
 
         void operator +=(const Handler &handler) {
@@ -49,7 +65,7 @@ namespace cwr {
         }
 
         void operator +=(const Handler &&handler) {
-            add(handler);
+            add(std::move(handler));
         }
 
         void operator -=(const Handler &handler) {
@@ -57,10 +73,17 @@ namespace cwr {
         }
 
         void operator -=(const Handler &&handler) {
-            remove(handler);
+            remove(std::move(handler));
         }
 
-        void invoke(Args... args, std::vector<R> &resultOut) const {
+        multidelegate& operator=(const multidelegate &other) {
+            if (this == &other) return *this;
+            m_Handlers.clear();
+            m_Handlers = std::vector<Handler>(other.m_Handlers);
+            return *this;
+        }
+
+        virtual void invoke(Args... args, std::vector<R> &resultOut) const {
             for (Handler handler : m_Handlers) {
                 resultOut.push_back(handler(args...));
             }
@@ -72,7 +95,7 @@ namespace cwr {
             }
         }
 
-        void operator()(Args... args, std::vector<R> &resultOut) const {
+        virtual void operator()(Args... args, std::vector<R> &resultOut) const {
             invoke(args..., resultOut);
         }
 
