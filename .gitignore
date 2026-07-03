@@ -4,6 +4,7 @@ cmake-build-debug/
 cmake-build-release/
 bin/
 lib/
+tests/gtest_lib/
 
 # Opcjonalne pliki użytkownika
 *.user

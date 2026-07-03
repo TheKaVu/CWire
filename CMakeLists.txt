@@ -12,6 +12,8 @@ add_library(CWire SHARED
 )
 target_include_directories(CWire PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
+add_subdirectory(tests)
+
 set_target_properties(CWire PROPERTIES
         ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib"
         LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib"
