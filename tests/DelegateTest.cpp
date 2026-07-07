@@ -67,7 +67,7 @@ TEST(DelegateTest, CopyContructorAndAssignmentOperatorCopiesCorrectly) {
     d1.set<Struct, &Struct::times2>(s);
     d2 = d1;
     ASSERT_EQ(d1, d2);
-    EXPECT_EQ(d1(3), d2(3));\
+    EXPECT_EQ(d1(3), d2(3));
 }
 
 TEST(DelegateTest, MemberFunctionDelegateRefersToObject) {
