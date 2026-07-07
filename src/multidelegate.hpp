@@ -12,86 +12,86 @@ namespace cwr {
     class multidelegate {
 
     public:
-        using Handler = delegate<R, Args...>;
+        using Delegate = delegate<R, Args...>;
 
     protected:
-        std::vector<Handler> m_Handlers;
+        std::vector<Delegate> m_Delegates;
 
     public:
-        multidelegate() : m_Handlers() {}
+        multidelegate() : m_Delegates() {}
 
-        multidelegate(Handler& handler) {
-            m_Handlers = {handler};
+        multidelegate(Delegate& delegate) {
+            m_Delegates = {delegate};
         }
 
-        multidelegate(const multidelegate &other) : m_Handlers(other.m_Handlers) {}
+        multidelegate(const multidelegate &other) : m_Delegates(other.m_Delegates) {}
 
-        multidelegate(const multidelegate &&other) noexcept : m_Handlers(std::move(other.m_Handlers)) {}
+        multidelegate(const multidelegate &&other) noexcept : m_Delegates(std::move(other.m_Delegates)) {}
 
         virtual ~multidelegate() {
-            m_Handlers.clear();
+            m_Delegates.clear();
         }
 
-        std::vector<Handler> handlers() const {
-            return m_Handlers;
+        std::vector<Delegate> delegates() const {
+            return m_Delegates;
         }
 
-        void add(const Handler &handler) {
-            m_Handlers.push_back(handler);
+        void add(const Delegate &delegate) {
+            m_Delegates.push_back(delegate);
         }
 
-        void add(const Handler &&handler) {
-            m_Handlers.push_back(std::move(handler));
+        void add(const Delegate &&delegate) {
+            m_Delegates.push_back(std::move(delegate));
         }
 
-        void remove(const Handler &handler) {
-            m_Handlers.erase(std::remove(m_Handlers.begin(), m_Handlers.end(), handler));
+        void remove(const Delegate &delegate) {
+            m_Delegates.erase(std::remove(m_Delegates.begin(), m_Delegates.end(), delegate));
         }
 
-        void remove(const Handler &&handler) {
-            m_Handlers.erase(std::remove(m_Handlers.begin(), m_Handlers.end(), std::move(handler)));
+        void remove(const Delegate &&delegate) {
+            m_Delegates.erase(std::remove(m_Delegates.begin(), m_Delegates.end(), std::move(delegate)));
         }
 
         bool operator==(const multidelegate &other) const {
-            return this == &other || m_Handlers == other.m_Handlers;
+            return this == &other || m_Delegates == other.m_Delegates;
         }
 
         bool operator!=(const multidelegate &other) const {
             return !(*this == other);
         }
 
-        void operator +=(const Handler &handler) {
-            add(handler);
+        void operator +=(const Delegate &delegate) {
+            add(delegate);
         }
 
-        void operator +=(const Handler &&handler) {
-            add(std::move(handler));
+        void operator +=(const Delegate &&delegate) {
+            add(std::move(delegate));
         }
 
-        void operator -=(const Handler &handler) {
-            remove(handler);
+        void operator -=(const Delegate &delegate) {
+            remove(delegate);
         }
 
-        void operator -=(const Handler &&handler) {
-            remove(std::move(handler));
+        void operator -=(const Delegate &&delegate) {
+            remove(std::move(delegate));
         }
 
         multidelegate& operator=(const multidelegate &other) {
             if (this == &other) return *this;
-            m_Handlers.clear();
-            m_Handlers = std::vector<Handler>(other.m_Handlers);
+            m_Delegates.clear();
+            m_Delegates = std::vector<Delegate>(other.m_Delegates);
             return *this;
         }
 
         virtual void invoke(Args... args, std::vector<R> &resultOut) const {
-            for (Handler handler : m_Handlers) {
-                resultOut.push_back(handler(args...));
+            for (Delegate delegate : m_Delegates) {
+                resultOut.push_back(delegate(args...));
             }
         }
 
         virtual void invoke(Args... args) const {
-            for (Handler handler : m_Handlers) {
-                handler(args...);
+            for (Delegate delegate : m_Delegates) {
+                delegate(args...);
             }
         }
 
