@@ -15,14 +15,16 @@ namespace cwr {
 
         /// Invokes wrapped function with given arguments.
         /// @param args Arguments to pass to the function.
-        void invoke(Args... args) const {
+        void* invoke(Args... args) const {
             multidelegate<void, Args...>::invoke(args...);
+            return nullptr;
         }
-        
+
         /// Invokes wrapped function with given arguments.
         /// @param args Arguments to pass to the function.
-        void operator()(Args... args) const {
+        void* operator()(Args... args) const {
             multidelegate<void, Args...>::operator()(args...);
+            return nullptr;
         }
     };
 }

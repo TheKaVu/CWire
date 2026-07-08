@@ -126,32 +126,28 @@ namespace cwr {
 
         /// Invokes stored delegates in order writing results to passed vector.
         /// @param args Arguments to pass to the function.
-        /// @param resultOut Vector to save results to.
-        virtual void invoke(Args... args, std::vector<R> &resultOut) const {
-            for (Delegate delegate : m_Delegates) {
-                resultOut.push_back(delegate(args...));
+        /// @returns Dynamic array of results, ignore if @c void .
+        virtual R* invoke(Args... args) const {
+            if constexpr (std::is_void_v<R>) {
+                for (Delegate delegate : m_Delegates) {
+                    delegate(args...);
+                }
+                return nullptr;
+            } else {
+                auto s = m_Delegates.size();
+                R* ret = new R[s];
+                for (size_t i = 0; i < s; ++i) {
+                    ret[i] = m_Delegates[i](args...);
+                }
+                return ret;
             }
         }
 
         /// Invokes stored delegates in order writing results to passed vector.
         /// @param args Arguments to pass to the function.
-        virtual void invoke(Args... args) const {
-            for (Delegate delegate : m_Delegates) {
-                delegate(args...);
-            }
-        }
-
-        /// Invokes stored delegates in order writing results to passed vector.
-        /// @param args Arguments to pass to the function.
-        /// @param resultOut Vector to save results to.
-        virtual void operator()(Args... args, std::vector<R> &resultOut) const {
-            invoke(args..., resultOut);
-        }
-
-        /// Invokes stored delegates in order writing results to passed vector.
-        /// @param args Arguments to pass to the function.
-        virtual void operator()(Args... args) const {
-            invoke(args...);
+        /// @returns Dynamic array of results, ignore if @c void .
+        virtual R* operator()(Args... args) const {
+            return invoke(args...);
         }
     };
 };
