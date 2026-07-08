@@ -27,13 +27,13 @@ namespace cwr {
         }
 
         /// Creates new property by copying other one.
-        /// @param p Property to copy.
-        property(const property &p) : m_Value(p.m_Value) {}
+        /// @param other Property to copy.
+        property(const property &other) : m_Value(other.m_Value) {}
 
         /// Creates new property by moving other one.
-        /// @param p Property to move.
-        property(property &&p) noexcept {
-            m_Value = std::move(p.m_Value);
+        /// @param other Property to move.
+        property(property &&other) noexcept {
+            m_Value = std::move(other.m_Value);
         }
 
         /// Gets the value of this property.
@@ -57,18 +57,18 @@ namespace cwr {
         }
 
         /// Copies given property to this one.
-        /// @param p Property to copy.
+        /// @param other Property to copy.
         /// @return This property.
-        property& operator=(const property &p) {
-            set(p.m_Value);
+        property& operator=(const property &other) {
+            set(other.m_Value);
             return *this;
         }
 
         /// Moves given property to this one.
-        /// @param p Property to move.
+        /// @param other Property to move.
         /// @return This property.
-        property& operator=(property &&p) noexcept {
-            set(std::move(p.m_Value));
+        property& operator=(property &&other) noexcept {
+            set(std::move(other.m_Value));
             return *this;
         }
 
@@ -87,10 +87,10 @@ namespace cwr {
         }
 
         /// Compares this property to another one.
-        /// @param p Property to compare.
+        /// @param other Property to compare.
         /// @return @c true if this property is "lesser", @c false otherwise.
-        bool operator<(const property &p) const {
-            return m_Value < p.m_Value;
+        bool operator<(const property &other) const {
+            return m_Value < other.m_Value;
         }
 
         /// Unpacks this property.

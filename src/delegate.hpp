@@ -185,7 +185,7 @@ namespace cwr {
     template<typename ...Args>
     using consumer = delegate<void, Args...>;
 
-    /// Accepts arguments and returns @code bool@endcode.
+    /// Accepts arguments and returns @c bool .
     /// @tparam Args Argument types.
     template<typename ...Args>
     using predicate = delegate<bool, Args...>;

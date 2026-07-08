@@ -13,10 +13,14 @@ namespace cwr {
     protected:
         ~event() override{}
 
+        /// Invokes wrapped function with given arguments.
+        /// @param args Arguments to pass to the function.
         void invoke(Args... args) const {
             multidelegate<void, Args...>::invoke(args...);
         }
-
+        
+        /// Invokes wrapped function with given arguments.
+        /// @param args Arguments to pass to the function.
         void operator()(Args... args) const {
             multidelegate<void, Args...>::operator()(args...);
         }
