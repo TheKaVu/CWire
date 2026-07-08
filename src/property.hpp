@@ -8,6 +8,8 @@
 #endif //CWIRE_PROPERTY_H
 
 namespace cwr {
+    template <typename T>
+    using ValueChangedEventHandler = delegate<T, T>;
 
     /// Single-value container watching its content change.
     /// @tparam T Type of stored value
@@ -16,9 +18,6 @@ namespace cwr {
 
         T m_Value;
         EVENT(ValueChanged, class property, T, T);
-
-    public:
-        using ValueChangedEventHandler = delegate<void, T>;
 
         /// Creates new property with given value.
         /// @param value Value of the property.
